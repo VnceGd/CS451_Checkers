@@ -103,4 +103,17 @@ public class GameManager : MonoBehaviour
     {
         this.settings.PlayerName = s;
     }
+    public void ExitApplication()
+    {
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #endif
+        Application.Quit();
+    }
+
+    //load the lobby scene, bring over the game manager
+    public void TraverseToLobby()
+    {
+
+    }
 }
