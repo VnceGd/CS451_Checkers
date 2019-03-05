@@ -1,12 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 using System.IO;
 using System;
-using UnityEngine;
 using System.Diagnostics;
 
-[System.Serializable]
+[Serializable]
 public class CheckersSettings
 {
     public string PlayerName;
@@ -64,8 +61,8 @@ public class CheckersSettings
             {
                 //if the file doesnt exist, create a new object, save it, then reload it
                 CheckersSettings newObj = new CheckersSettings();
-                CheckersSettings.SerializeSettingsFile(path, newObj);
-                CheckersSettings.DeserializeSettingsFile(path);
+                SerializeSettingsFile(path, newObj);
+                DeserializeSettingsFile(path);
             }
             return tmp;
         }

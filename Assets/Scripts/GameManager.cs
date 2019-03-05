@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager instance = null;
+    public static GameManager instance;
     public CheckersSettings settings;
 
     public BoardGenerator boardGenerator;
@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
 
     public GameObject playerPrefab;
     public GameObject competitorPrefab;
-    // Start is called before the first frame update
+
 
     void Awake()
     {
@@ -54,19 +54,19 @@ public class GameManager : MonoBehaviour
     }
     public void LoadDefaultSettings()
     {
-        if(this.settings != null)
+        if(settings != null)
         {
-            this.settings.LoadDefaults();
+            settings.LoadDefaults();
         }
     }
 
     public void SetPlayerColorIndex(int i)
     {
-        this.settings.PlayerColorIndex = i;
+        settings.PlayerColorIndex = i;
     }
     public void SetCompetitorColorIndex(int i)
     {
-        this.settings.PlayerColorIndex = i;
+        settings.PlayerColorIndex = i;
     }
     public void SetCombinedMessageSize(string s)
     {
@@ -74,11 +74,11 @@ public class GameManager : MonoBehaviour
         {
             int value = int.Parse(s);
 
-            this.settings.MaxCombinedReliableMessageSize = value;
+            settings.MaxCombinedReliableMessageSize = value;
         }
         catch(Exception ex)
         {
-            this.settings.MaxCombinedReliableMessageSize = 1024;
+            settings.MaxCombinedReliableMessageSize = 1024;
         }
     }
     public void SetMessageSize(string s)
@@ -87,28 +87,28 @@ public class GameManager : MonoBehaviour
         {
             int value = int.Parse(s);
 
-            this.settings.MaxMessageQueueSize = value;
+            settings.MaxMessageQueueSize = value;
         }
         catch (Exception ex)
         {
-            this.settings.MaxMessageQueueSize = 1024;
+            settings.MaxMessageQueueSize = 1024;
         }
     }
     public void SetNetworkPort(string s)
     {
-        this.settings.DefaultNetworkPort = s;
+        settings.DefaultNetworkPort = s;
     }
     public void SetNetworkAddress(string s)
     {
-        this.settings.DefaultNetworkAddress = s;
+        settings.DefaultNetworkAddress = s;
     }
     public void SetRoomName(string s)
     {
-        this.settings.RoomName = s;
+        settings.RoomName = s;
     }
     public void SetPlayerName(string s)
     {
-        this.settings.PlayerName = s;
+        settings.PlayerName = s;
     }
     public void ExitApplication()
     {
@@ -121,14 +121,18 @@ public class GameManager : MonoBehaviour
     //load the lobby scene, bring over the game manager
     public void TraverseToLobby()
     {
-
+        DontDestroyOnLoad(instance);
+        SceneManager.LoadScene("Lobby");
     }
 
+    // Generate board and place each player's pieces
     public void GenerateBoard()
     {
         if (boardGenerator != null)
         {
             pieceList = boardGenerator.GenerateBoard();
+            GeneratePlayerPieces();
+            GenerateCompetitorPieces();
         }
     }
     public void GeneratePlayerPieces()
@@ -136,6 +140,13 @@ public class GameManager : MonoBehaviour
         if(boardGenerator != null)
         {
             boardGenerator.PlaceClientPieces(playerPrefab);
+        }
+    }
+    public void GenerateCompetitorPieces()
+    {
+        if (boardGenerator != null)
+        {
+            boardGenerator.PlaceClientPieces(competitorPrefab);
         }
     }
     /*
