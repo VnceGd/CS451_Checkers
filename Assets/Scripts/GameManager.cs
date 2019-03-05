@@ -7,6 +7,12 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance = null;
     public CheckersSettings settings;
+
+    public BoardGenerator boardGenerator;
+    public List<List<CheckersBoardPiece>> pieceList;
+
+    public GameObject playerPrefab;
+    public GameObject competitorPrefab;
     // Start is called before the first frame update
 
     void Awake()
@@ -26,6 +32,7 @@ public class GameManager : MonoBehaviour
         Debug.Log(Application.dataPath);
         //on start load the settings file
         settings = CheckersSettings.DeserializeSettingsFile(Application.dataPath + "/");
+        boardGenerator = BoardGenerator.instance;
     }
 
     // Update is called once per frame
@@ -116,4 +123,26 @@ public class GameManager : MonoBehaviour
     {
 
     }
+
+    public void GenerateBoard()
+    {
+        if (boardGenerator != null)
+        {
+            pieceList = boardGenerator.GenerateBoard();
+        }
+    }
+    public void GeneratePlayerPieces()
+    {
+        if(boardGenerator != null)
+        {
+            boardGenerator.PlaceClientPieces(playerPrefab);
+        }
+    }
+    /*
+    public bool MovePiece(PlayerPiece piece, )
+    {
+
+        return true;
+    }
+    */
 }
