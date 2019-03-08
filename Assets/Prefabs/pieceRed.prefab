@@ -96,6 +96,7 @@ MonoBehaviour:
   x: 0
   y: 0
   isBeingMoved: 0
+  kingSprite: {fileID: 21300000, guid: e452589e2e6b9486e8408fa10eb11f1a, type: 3}
   isKing: 0
   isRed: 1
 --- !u!61 &918735115935946142

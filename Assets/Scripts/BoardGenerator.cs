@@ -15,6 +15,9 @@ public class BoardGenerator : MonoBehaviour
     public List<PlayerPiece> playerPieces;
     public List<PlayerPiece> competitorPieces;
 
+    public bool playerTurn = true;
+    public bool forceJump;
+
     private void Awake()
     {
         if (instance == null)
@@ -125,6 +128,99 @@ public class BoardGenerator : MonoBehaviour
         }
     }
 
+    public bool JumpAvailable(PlayerPiece p)
+    {
+        if (p.isRed)
+        {
+            if (p.x < 7 && 
+                pieceList[p.x + 1][p.y + 1].occupied &&
+                !pieceList[p.x + 1][p.y + 1].occupant.isRed)
+            {
+                if (p.x < 6 && 
+                    !pieceList[p.x + 2][p.y + 2].occupied)
+                {
+                    return true;
+                }
+            }
+            if (p.x > 0 && 
+                pieceList[p.x - 1][p.y + 1].occupied &&
+                !pieceList[p.x - 1][p.y + 1].occupant.isRed)
+            {
+                if (p.x > 1 && 
+                    !pieceList[p.x - 2][p.y + 2].occupied)
+                {
+                    return true;
+                }
+            }
+            if (p.isKing)
+            {
+                if (p.x < 7 && 
+                    pieceList[p.x + 1][p.y - 1].occupied &&
+                    !pieceList[p.x + 1][p.y - 1].occupant.isRed)
+                {
+                    if (p.x < 6 && 
+                        !pieceList[p.x + 2][p.y - 2].occupied)
+                    {
+                        return true;
+                    }
+                }
+                if (p.x > 0 && 
+                    pieceList[p.x - 1][p.y - 1].occupied &&
+                    !pieceList[p.x - 1][p.y - 1].occupant.isRed)
+                {
+                    if (p.x > 1 && 
+                        !pieceList[p.x - 2][p.y - 2].occupied)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (p.x < 7 && 
+                pieceList[p.x + 1][p.y - 1].occupied &&
+                pieceList[p.x + 1][p.y - 1].occupant.isRed)
+            {
+                if (!pieceList[p.x + 2][p.y - 2].occupied)
+                {
+                    return true;
+                }
+            }
+            if (p.x > 0 && 
+                pieceList[p.x - 1][p.y - 1].occupied &&
+                pieceList[p.x - 1][p.y - 1].occupant.isRed)
+            {
+                if (!pieceList[p.x - 2][p.y - 2].occupied)
+                {
+                    return true;
+                }
+            }
+            if (p.isKing)
+            {
+                if (p.x < 7 && 
+                    pieceList[p.x + 1][p.y + 1].occupied &&
+                    pieceList[p.x + 1][p.y + 1].occupant.isRed)
+                {
+                    if (!pieceList[p.x + 2][p.y + 2].occupied)
+                    {
+                        return true;
+                    }
+                }
+                if (p.x > 0 && 
+                    pieceList[p.x - 1][p.y + 1].occupied &&
+                    pieceList[p.x - 1][p.y + 1].occupant.isRed)
+                {
+                    if (!pieceList[p.x - 2][p.y + 2].occupied)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     // Check validity of a move, return true if valid
     public bool MovePiece(PlayerPiece p, int targetX, int targetY)
     {
@@ -134,66 +230,82 @@ public class BoardGenerator : MonoBehaviour
         if (!pieceList[targetX][targetY].occupied)
         {
             Debug.Log(p.x + ", " + p.y + " to " + targetX + ", " + targetY);
-            if (p.isRed)
+            if (playerTurn && p.isRed)
             {
-                if (Mathf.Abs(targetX - p.x) == 1 && targetY - p.y == 1)
+                if (Mathf.Abs(targetX - p.x) == 1 && targetY - p.y == 1 &&
+                    !forceJump)
                 {
                     moveMade = true;
                 }
                 else if (Mathf.Abs(targetX - p.x) == 2 && targetY - p.y == 2)
                 {
-                    CheckersBoardPiece jumping = pieceList[(targetX + p.x) / 2][p.y + 1];
+                    int jumpX = (targetX + p.x) / 2;
+                    int jumpY = p.y + 1;
+                    CheckersBoardPiece jumping = pieceList[jumpX][jumpY];
                     if (jumping.occupied && !jumping.occupant.isRed)
                     {
                         moveMade = true;
                         Destroy(jumping.occupant.gameObject);
+                        RemovePiece(jumpX, jumpY);
                     }
                 }
                 if (p.isKing)
                 {
-                    if (Mathf.Abs(targetX - p.x) == 1 && targetY - p.y == -1)
+                    if (Mathf.Abs(targetX - p.x) == 1 && targetY - p.y == -1 &&
+                        !forceJump)
                     {
                         moveMade = true;
                     }
                     else if (Mathf.Abs(targetX - p.x) == 2 && targetY - p.y == 2)
                     {
-                        CheckersBoardPiece jumping = pieceList[(targetX + p.x) / 2][p.y - 1];
+                        int jumpX = (targetX + p.x) / 2;
+                        int jumpY = p.y - 1;
+                        CheckersBoardPiece jumping = pieceList[jumpX][jumpY];
                         if (jumping.occupied && !jumping.occupant.isRed)
                         {
                             moveMade = true;
                             Destroy(jumping.occupant.gameObject);
+                            RemovePiece(jumpX, jumpY);
                         }
                     }
                 }
             }
-            else
+            else if (!playerTurn && !p.isRed)
             {
-                if (Mathf.Abs(targetX - p.x) == 1 && targetY - p.y == -1)
+                if (Mathf.Abs(targetX - p.x) == 1 && targetY - p.y == -1 && 
+                    !forceJump)
                 {
                     moveMade = true;
                 }
-                else if (Mathf.Abs(targetX - p.x) == 2 && targetY - p.y == 2)
+                else if (Mathf.Abs(targetX - p.x) == 2 && targetY - p.y == -2)
                 {
-                    CheckersBoardPiece jumping = pieceList[(targetX + p.x) / 2][p.y - 1];
+                    int jumpX = (targetX + p.x) / 2;
+                    int jumpY = p.y - 1;
+                    CheckersBoardPiece jumping = pieceList[jumpX][jumpY];
                     if (jumping.occupied && jumping.occupant.isRed)
                     {
                         moveMade = true;
                         Destroy(jumping.occupant.gameObject);
+                        RemovePiece(jumpX, jumpY);
                     }
                 }
                 if (p.isKing)
                 {
-                    if (Mathf.Abs(targetX - p.x) == 1 && targetY - p.y == 1)
+                    if (Mathf.Abs(targetX - p.x) == 1 && targetY - p.y == 1 && 
+                        !forceJump)
                     {
                         moveMade = true;
                     }
                     else if (Mathf.Abs(targetX - p.x) == 2 && targetY - p.y == 2)
                     {
-                        CheckersBoardPiece jumping = pieceList[(targetX + p.x) / 2][p.y + 1];
+                        int jumpX = (targetX + p.x) / 2;
+                        int jumpY = p.y + 1;
+                        CheckersBoardPiece jumping = pieceList[jumpX][jumpY];
                         if (jumping.occupied && jumping.occupant.isRed)
                         {
                             moveMade = true;
                             Destroy(jumping.occupant.gameObject);
+                            RemovePiece(jumpX, jumpY);
                         }
                     }
                 }
@@ -205,12 +317,88 @@ public class BoardGenerator : MonoBehaviour
                 p.x = targetX;
                 p.y = targetY;
                 p.isBeingMoved = false;
+
+                if (!p.isKing)
+                {
+                    if (p.isRed && targetY == 7)
+                    {
+                        p.Promote();
+                    }
+                    else if (targetY == 0)
+                    {
+                        p.Promote();
+                    }
+                }
+                if (!JumpAvailable(p))
+                {
+                    p.mustJump = false;
+                }
+
                 pieceList[targetX][targetY].occupant = p;
                 pieceList[targetX][targetY].occupied = true;
-                pieceList[tmpX][tmpY].occupant = null;
-                pieceList[tmpX][tmpY].occupied = false;
+                RemovePiece(tmpX, tmpY);
+
+                if (!p.mustJump)
+                {
+                    EndTurn();
+                }
             }
         }
         return moveMade;
+    }
+
+    // Pass turn to other player
+    public void EndTurn()
+    {
+        forceJump = false;
+        if (playerTurn)
+        {
+            playerTurn = false;
+        }
+        else
+        {
+            playerTurn = true;
+        }
+        StartOfTurn();
+    }
+
+    // Check if current player has a jump available
+    public void StartOfTurn()
+    {
+        if (playerTurn)
+        {
+            foreach (PlayerPiece p in playerPieces)
+            {
+                if (JumpAvailable(p))
+                {
+                    p.mustJump = true;
+                    if (!forceJump)
+                    {
+                        forceJump = true;
+                    }
+                }
+            }
+        }
+        else
+        {
+            foreach (PlayerPiece p in competitorPieces)
+            {
+                if (JumpAvailable(p))
+                {
+                    p.mustJump = true;
+                    if (!forceJump)
+                    {
+                        forceJump = true;
+                    }
+                }
+            }
+        }
+    }
+
+    // Remove piece from pieceList
+    public void RemovePiece(int x, int y)
+    {
+        pieceList[x][y].occupant = null;
+        pieceList[x][y].occupied = false;
     }
 }

@@ -33,6 +33,10 @@ public class GameManager : MonoBehaviour
         //on start load the settings file
         settings = CheckersSettings.DeserializeSettingsFile(Application.dataPath + "/");
         boardGenerator = BoardGenerator.instance;
+        if (boardGenerator)
+        {
+            GenerateBoard();
+        }
     }
 
     // Update is called once per frame
@@ -123,6 +127,11 @@ public class GameManager : MonoBehaviour
     {
         DontDestroyOnLoad(instance);
         SceneManager.LoadScene("Lobby");
+    }
+
+    public void StartGame()
+    {
+        SceneManager.LoadScene("Game");
     }
 
     // Generate board and place each player's pieces

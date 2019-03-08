@@ -8,9 +8,11 @@ public class PlayerPiece : MonoBehaviour
     public bool isBeingMoved;
 
     private SpriteRenderer renderer;
+    public Sprite kingSprite;
 
     public bool isKing;
     public bool isRed;
+    public bool mustJump;
 
     void Start()
     {
@@ -54,5 +56,11 @@ public class PlayerPiece : MonoBehaviour
     {
         Player.instance.MovePiece();
         Player.instance.selectedPiece = null;
+    }
+
+    public void Promote()
+    {
+        isKing = true;
+        renderer.sprite = kingSprite;
     }
 }
