@@ -21,7 +21,7 @@ public class ClientGameManager : MonoBehaviour
     }
     private void Update()
     {
-        moveText.text = Player.instance.canMakeMove.ToString() + Player.instance.isCompetitor.ToString();
+        moveText.text = Player.instance.canMakeMove.ToString() + ", " + Player.instance.isCompetitor.ToString();
     }
     public void GenerateBoard()
     {

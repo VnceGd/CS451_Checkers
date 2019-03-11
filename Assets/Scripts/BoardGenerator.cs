@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 public class BoardGenerator : MonoBehaviour
@@ -19,6 +20,9 @@ public class BoardGenerator : MonoBehaviour
     public bool playerTurn = true;
     public bool forceJump;
     public int jumpCount = 0;
+
+    public GameObject matchEndScreen;
+    public Text matchEndText;
 
     private void Awake()
     {
@@ -151,48 +155,105 @@ public class BoardGenerator : MonoBehaviour
             }
         }
     }
+
+    // Check if piece has a move available
+    public bool MoveAvailable(PlayerPiece p)
+    {
+        if (p.isRed)
+        {
+            if (p.y < 7)
+            {
+                if (p.x < 7 && !pieceList[p.x + 1][p.y + 1].occupied)
+                {
+                    return true;
+                }
+                if (p.x > 0 && !pieceList[p.x - 1][p.y + 1].occupied)
+                {
+                    return true;
+                }
+            }
+            if (p.isKing && p.y > 0)
+            {
+                if (p.x < 7 && !pieceList[p.x + 1][p.y - 1].occupied)
+                {
+                    return true;
+                }
+                if (p.x > 0 && !pieceList[p.x - 1][p.y - 1].occupied)
+                {
+                    return true;
+                }
+            }
+        }
+        else
+        {
+            if (p.y > 0)
+            {
+                if (p.x < 7 && !pieceList[p.x + 1][p.y - 1].occupied)
+                {
+                    return true;
+                }
+                if (p.x > 0 && !pieceList[p.x - 1][p.y - 1].occupied)
+                {
+                    return true;
+                }
+            }
+            if (p.isKing && p.y < 7)
+            {
+                if (p.x < 7 && !pieceList[p.x + 1][p.y + 1].occupied)
+                {
+                    return true;
+                }
+                if (p.x > 0 && !pieceList[p.x - 1][p.y + 1].occupied)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    // Check if piece has a jump available
     public bool JumpAvailable(PlayerPiece p)
     {
         if (p.isRed)
         {
-            if (p.x < 6 && p.y < 6 &&
-                pieceList[p.x + 1][p.y + 1].occupied &&
-                !pieceList[p.x + 1][p.y + 1].occupant.isRed)
+            if (p.y < 6)
             {
-                if (p.x < 6 && 
-                    !pieceList[p.x + 2][p.y + 2].occupied)
+                if (p.x < 6 &&
+                    pieceList[p.x + 1][p.y + 1].occupied &&
+                    !pieceList[p.x + 1][p.y + 1].occupant.isRed)
                 {
-                    return true;
-                }
-            }
-            if (p.x > 0 && p.y < 7 &&
-                pieceList[p.x - 1][p.y + 1].occupied &&
-                !pieceList[p.x - 1][p.y + 1].occupant.isRed)
-            {
-                if (p.x > 1 && p.y > 1 &&
-                    !pieceList[p.x - 2][p.y + 2].occupied)
-                {
-                    return true;
-                }
-            }
-            if (p.isKing)
-            {
-                if (p.x < 7 && 
-                    pieceList[p.x + 1][p.y - 1].occupied &&
-                    !pieceList[p.x + 1][p.y - 1].occupant.isRed)
-                {
-                    if (p.x < 6 && 
-                        !pieceList[p.x + 2][p.y - 2].occupied)
+                    if (!pieceList[p.x + 2][p.y + 2].occupied)
                     {
                         return true;
                     }
                 }
-                if (p.x > 0 && 
+                if (p.x > 1 &&
+                    pieceList[p.x - 1][p.y + 1].occupied &&
+                    !pieceList[p.x - 1][p.y + 1].occupant.isRed)
+                {
+                    if (!pieceList[p.x - 2][p.y + 2].occupied)
+                    {
+                        return true;
+                    }
+                }
+            }
+            if (p.isKing && p.y > 1)
+            {
+                if (p.x < 6 &&
+                    pieceList[p.x + 1][p.y - 1].occupied &&
+                    !pieceList[p.x + 1][p.y - 1].occupant.isRed)
+                {
+                    if (!pieceList[p.x + 2][p.y - 2].occupied)
+                    {
+                        return true;
+                    }
+                }
+                if (p.x > 1 &&
                     pieceList[p.x - 1][p.y - 1].occupied &&
                     !pieceList[p.x - 1][p.y - 1].occupant.isRed)
                 {
-                    if (p.x > 1 && 
-                        !pieceList[p.x - 2][p.y - 2].occupied)
+                    if (!pieceList[p.x - 2][p.y - 2].occupied)
                     {
                         return true;
                     }
@@ -201,27 +262,30 @@ public class BoardGenerator : MonoBehaviour
         }
         else
         {
-            if (p.x < 6 && p.y > 1 &&
-                pieceList[p.x + 1][p.y - 1].occupied &&
-                pieceList[p.x + 1][p.y - 1].occupant.isRed)
+            if (p.y > 1)
             {
-                if (!pieceList[p.x + 2][p.y - 2].occupied)
+                if (p.x < 6 && 
+                    pieceList[p.x + 1][p.y - 1].occupied &&
+                    pieceList[p.x + 1][p.y - 1].occupant.isRed)
                 {
-                    return true;
+                    if (!pieceList[p.x + 2][p.y - 2].occupied)
+                    {
+                        return true;
+                    }
+                }
+                if (p.x > 1 && 
+                    pieceList[p.x - 1][p.y - 1].occupied &&
+                    pieceList[p.x - 1][p.y - 1].occupant.isRed)
+                {
+                    if (!pieceList[p.x - 2][p.y - 2].occupied)
+                    {
+                        return true;
+                    }
                 }
             }
-            if (p.x > 1 && p.y > 1 &&
-                pieceList[p.x - 1][p.y - 1].occupied &&
-                pieceList[p.x - 1][p.y - 1].occupant.isRed)
+            if (p.isKing && p.y < 6)
             {
-                if (!pieceList[p.x - 2][p.y - 2].occupied)
-                {
-                    return true;
-                }
-            }
-            if (p.isKing)
-            {
-                if (p.x < 7 && 
+                if (p.x < 6 && 
                     pieceList[p.x + 1][p.y + 1].occupied &&
                     pieceList[p.x + 1][p.y + 1].occupant.isRed)
                 {
@@ -230,7 +294,7 @@ public class BoardGenerator : MonoBehaviour
                         return true;
                     }
                 }
-                if (p.x > 0 && 
+                if (p.x > 1 && 
                     pieceList[p.x - 1][p.y + 1].occupied &&
                     pieceList[p.x - 1][p.y + 1].occupant.isRed)
                 {
@@ -252,7 +316,6 @@ public class BoardGenerator : MonoBehaviour
         int tmpY = p.y;
         if (!pieceList[targetX][targetY].occupied)
         {
-            Debug.Log(p.x + ", " + p.y + " to " + targetX + ", " + targetY);
             if (playerTurn && p.isRed)
             {
                 if (Mathf.Abs(targetX - p.x) == 1 && targetY - p.y == 1 &&
@@ -270,7 +333,7 @@ public class BoardGenerator : MonoBehaviour
                         moveMade = true;
                         Destroy(jumping.occupant.gameObject);
                         RemovePiece(jumpX, jumpY);
-                        jumpCount += 1;
+                        jumpCount++;
                     }
                 }
                 if (p.isKing)
@@ -290,7 +353,7 @@ public class BoardGenerator : MonoBehaviour
                             moveMade = true;
                             Destroy(jumping.occupant.gameObject);
                             RemovePiece(jumpX, jumpY);
-                            jumpCount += 1;
+                            jumpCount++;
                         }
                     }
                 }
@@ -312,7 +375,7 @@ public class BoardGenerator : MonoBehaviour
                         moveMade = true;
                         Destroy(jumping.occupant.gameObject);
                         RemovePiece(jumpX, jumpY);
-                        jumpCount += 1;
+                        jumpCount++;
                     }
                 }
                 if (p.isKing)
@@ -332,13 +395,14 @@ public class BoardGenerator : MonoBehaviour
                             moveMade = true;
                             Destroy(jumping.occupant.gameObject);
                             RemovePiece(jumpX, jumpY);
-                            jumpCount += 1;
+                            jumpCount++;
                         }
                     }
                 }
             }
             if (moveMade)
             {
+                Debug.Log(p.x + ", " + p.y + " to " + targetX + ", " + targetY);
                 p.transform.position = pieceList[targetX][targetY].MoveToLocation.position 
                                      + Vector3.back;
                 p.x = targetX;
@@ -356,7 +420,7 @@ public class BoardGenerator : MonoBehaviour
                         p.Promote();
                     }
                 }
-                if (!JumpAvailable(p))
+                if (p.mustJump && !JumpAvailable(p))
                 {
                     p.mustJump = false;
                 }
@@ -391,13 +455,39 @@ public class BoardGenerator : MonoBehaviour
         StartOfTurn();
     }
 
+    // End the match and declare a winner
+    public void EndMatch()
+    {
+        matchEndScreen.SetActive(true);
+        if (playerTurn)
+        {
+            matchEndText.text = "You Win";
+            // Also send "You Lose" message to client
+        }
+        else
+        {
+            matchEndText.text = "You Lose";
+            // Also send "You Win" message to client
+        }
+    }
+
     // Check if current player has a jump available
     public void StartOfTurn()
     {
+        bool canMove = false;
         if (playerTurn)
         {
+            if (playerPieces.Count <= 0)
+            {
+                EndMatch();
+                return;
+            }
             foreach (PlayerPiece p in playerPieces)
             {
+                if (!canMove && MoveAvailable(p))
+                {
+                    canMove = true;
+                }
                 if (JumpAvailable(p) && jumpCount > 0)
                 {
                     p.mustJump = true;
@@ -407,11 +497,25 @@ public class BoardGenerator : MonoBehaviour
                     }
                 }
             }
+            if (!canMove)
+            {
+                EndMatch();
+                return;
+            }
         }
         else
         {
+            if (competitorPieces.Count <= 0)
+            {
+                EndMatch();
+                return;
+            }
             foreach (PlayerPiece p in competitorPieces)
             {
+                if (!canMove && MoveAvailable(p))
+                {
+                    canMove = true;
+                }
                 if (JumpAvailable(p) && jumpCount > 0)
                 {
                     p.mustJump = true;
@@ -420,6 +524,11 @@ public class BoardGenerator : MonoBehaviour
                         forceJump = true;
                     }
                 }
+            }
+            if (!canMove)
+            {
+                EndMatch();
+                return;
             }
         }
     }

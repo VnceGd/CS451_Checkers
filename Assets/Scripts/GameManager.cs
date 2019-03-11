@@ -127,6 +127,10 @@ public class GameManager : MonoBehaviour
         Application.Quit();
     }
 
+    public void TraverseToMainMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
+    }
     //load the lobby scene, bring over the game manager
     public void TraverseToLobby()
     {
