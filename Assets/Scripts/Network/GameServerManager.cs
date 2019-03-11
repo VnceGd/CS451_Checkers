@@ -58,12 +58,12 @@ public class GameServerManager : MonoBehaviourSingletonPersistent<GameServerMana
 
         SendAllObjectsToSpawnTo(e.Client);
         connectedClient = e.Client;
-        e.Client.MessageReceived += UpdateServerMessageRecieved;
+        e.Client.MessageReceived += UpdateServerMessageReceived;
         e.Client.MessageReceived += MoveChange;
         e.Client.MessageReceived += RemovePiece;
     }
 
-    void UpdateServerMessageRecieved(object sender, MessageReceivedEventArgs e)
+    void UpdateServerMessageReceived(object sender, MessageReceivedEventArgs e)
     {
         using(Message message = e.GetMessage() as Message)
         {

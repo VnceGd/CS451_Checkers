@@ -5,8 +5,14 @@ public class LeaveMatch : MonoBehaviour
 {
     public void TraverseToMainMenu()
     {
-        Destroy(GameServerManager.instance.gameObject);
-        Destroy(GameManager.instance.gameObject);
+        if (GameServerManager.instance)
+        {
+            Destroy(GameServerManager.instance.gameObject);
+        }
+        if (GameManager.instance)
+        {
+            Destroy(GameManager.instance.gameObject);
+        }
         SceneManager.LoadScene("MainMenu");
     }
 }
