@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheckersSettings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <PlayerName>Default Name</PlayerName>
+  <RoomName>Room Name</RoomName>
+  <DefaultNetworkAddress>127.0.0.1</DefaultNetworkAddress>
+  <PlayerColorIndex>0</PlayerColorIndex>
+  <CompetitorColorIndex>0</CompetitorColorIndex>
+  <DefaultNetworkPort>4296</DefaultNetworkPort>
+  <MaxMessageQueueSize>2</MaxMessageQueueSize>
+  <MaxCombinedReliableMessageSize>2</MaxCombinedReliableMessageSize>
+  <ThreadAwakeTimeout>10</ThreadAwakeTimeout>
+</CheckersSettings>
